@@ -1,0 +1,5 @@
+Qwen2.5 Coder 1.5B Instruct GGUF · Q4_K_M
+Model publisher: Qwen, https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF
+Revision: f86cb2c1fa58255f8052cc32aeede1b7482d4361
+File: qwen2.5-coder-1.5b-instruct-q4_k_m.gguf
+License: Apache License, Version 2.0 (see LICENSE-Qwen-Apache-2.0.txt).

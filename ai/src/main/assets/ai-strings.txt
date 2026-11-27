@@ -1,0 +1,102 @@
+‹  返回|‹  Back|‹  戻る|‹  뒤로|‹  Volver
+SQL 助手|SQL assistant|SQL アシスタント|SQL 도우미|Asistente SQL
+管理模型|Models|モデル管理|모델 관리|Modelos
+任务|Task|タスク|작업|Tarea
+写 SQL|Write SQL|SQL 作成|SQL 작성|Redactar
+解释|Explain|解説|설명|Explicar
+纠错|Fix|修正|수정|Corregir
+生成 SQL|Generate SQL|SQL を生成|SQL 생성|Generar SQL
+模型输出|Model output|モデルの出力|모델 출력|Respuesta
+放入编辑器|Open in editor|エディタに挿入|편집기에 넣기|Abrir en editor
+复制|Copy|コピー|복사|Copiar
+已复制。|Copied.|コピーしました。|복사했습니다.|Copiado.
+未附表结构|No schema|スキーマなし|스키마 없음|Sin esquema
+\n\n错误\n|\n\nError\n|\n\nエラー\n|\n\n오류\n|\n\nError\n
+本次数据库上下文|Database context|今回のデータベース情報|데이터베이스 문맥|Contexto de la base
+关闭|Close|閉じる|닫기|Cerrar
+尚未安装模型|No model installed|モデル未導入|설치한 모델 없음|Sin modelo instalado
+已附表结构|Schema attached|スキーマあり|스키마 있음|Esquema adjunto
+未附 SQL|No SQL|SQL なし|SQL 없음|Sin SQL
+已附 SQL|SQL attached|SQL あり|SQL 있음|SQL adjunto
+停止|Stop|停止|중지|Detener
+修正 SQL|Fix SQL|SQL を修正|SQL 수정|Corregir SQL
+解释 SQL|Explain SQL|SQL を解説|SQL 설명|Explicar SQL
+例如：统计每个城市的销售总额|e.g. total sales by city|例：都市ごとの売上合計|예: 도시별 매출 합계|Ej.: ventas totales por ciudad
+补充错误现象（可选）|Describe the issue (optional)|状況を補足（任意）|오류 설명 (선택)|Describe el error (opcional)
+想重点了解什么？（可选）|What should we focus on? (optional)|詳しく知りたい点（任意）|궁금한 부분 (선택)|¿Qué quieres aclarar? (opcional)
+输出会显示在这里。|Results appear here.|結果はここに表示されます。|결과가 여기에 표시됩니다.|Aquí aparecerá la respuesta.
+下载模型|Download a model|モデルをダウンロード|모델 다운로드|Descargar modelo
+从文件导入 GGUF|Import GGUF file|GGUF をインポート|GGUF 파일 가져오기|Importar archivo GGUF
+设备上的模型|On-device models|端末内のモデル|기기 내 모델|Modelos del dispositivo
+使用此模型|Use this model|このモデルを使用|이 모델 사용|Usar este modelo
+模型已切换。|Model selected.|モデルを変更しました。|모델을 전환했습니다.|Modelo seleccionado.
+移除…|Remove…|削除…|삭제…|Quitar…
+从本应用移除该模型？原始导入文件将保留。|Remove this app’s copy? The original file will remain.|アプリ内のコピーを削除しますか？ 元のファイルは残ります。|앱의 복사본을 삭제할까요? 원본은 유지됩니다.|¿Quitar la copia de la app? Se conserva el archivo original.
+移除|Remove|削除|삭제|Quitar
+取消|Cancel|キャンセル|취소|Cancelar
+返回|Back|戻る|뒤로|Volver
+下载至手机|Download to device|端末にダウンロード|기기에 다운로드|Descargar al dispositivo
+Qwen2.5 Coder 1.5B · 1.12 GB（推荐）|Qwen2.5 Coder 1.5B · 1.12 GB (recommended)|Qwen2.5 Coder 1.5B · 1.12 GB（推奨）|Qwen2.5 Coder 1.5B · 1.12 GB (권장)|Qwen2.5 Coder 1.5B · 1.12 GB (recomendado)
+Qwen2.5 Coder 0.5B · 491 MB（轻量）|Qwen2.5 Coder 0.5B · 491 MB (compact)|Qwen2.5 Coder 0.5B · 491 MB（軽量）|Qwen2.5 Coder 0.5B · 491 MB (경량)|Qwen2.5 Coder 0.5B · 491 MB (ligero)
+从 Hugging Face 的 Qwen 官方仓库下载 |Download from Qwen on Hugging Face: |Hugging Face の Qwen 公式モデル：|Hugging Face의 Qwen 공식 저장소: |Descarga oficial de Qwen en Hugging Face: 
+。下载完成后可断网使用。|. Once stored, it works offline.|。保存後はオフラインで使えます。|. 다운로드 후 오프라인으로 사용할 수 있습니다.|. Después funcionará sin conexión.
+开始下载|Download|ダウンロード|다운로드|Descargar
+正在停止…|Stopping…|停止中…|중지 중…|Deteniendo…
+正在连接模型站…|Connecting to model host…|配布元に接続中…|모델 저장소 연결 중…|Conectando al repositorio…
+正在读取文件…|Reading file…|ファイルを読み込み中…|파일 읽는 중…|Leyendo el archivo…
+正在保存  |Saving  |保存中  |저장 중  |Guardando  
+模型已就绪。|Model ready.|モデルを使用できます。|모델 준비 완료.|Modelo listo.
+已停止。|Stopped.|停止しました。|중지했습니다.|Detenido.
+模型未保存：|Model not saved: |保存できませんでした：|모델 저장 실패: |Modelo no guardado: 
+输入想查询什么。|Describe what you want to query.|調べたい内容を入力してください。|조회할 내용을 입력하세요.|Escribe qué quieres consultar.
+请先在 SQL 编辑器输入语句，再打开助手。|Enter a statement in the SQL editor, then reopen the assistant.|先にエディタへ SQL を入力し、再度開いてください。|편집기에 SQL을 입력한 뒤 다시 여세요.|Escribe SQL en el editor y vuelve a abrir el asistente.
+正在手机上加载模型…|Loading model on device…|端末上でモデルを読み込み中…|기기에서 모델 불러오는 중…|Cargando modelo en el dispositivo…
+模型正在推理…|Generating on device…|端末上で生成中…|기기에서 생성 중…|Generando en el dispositivo…
+输入超出 3072 token 上下文。请减少表结构或缩短 SQL。|Input exceeds 3072 tokens. Use fewer tables or shorten the SQL.|入力が 3072 トークンを超えました。テーブルや SQL を短くしてください。|입력이 3072토큰을 넘었습니다. 테이블 수나 SQL을 줄이세요.|La entrada supera los 3072 tokens. Reduce el esquema o el SQL.
+可用内存不足。请关闭其他应用，或切换到较小模型。|Not enough memory. Close other apps or use a smaller model.|メモリ不足です。他のアプリを閉じるか、小さいモデルを選んでください。|메모리가 부족합니다. 다른 앱을 닫거나 작은 모델을 선택하세요.|Memoria insuficiente. Cierra otras apps o usa un modelo menor.
+设备无法加载原生推理库。|The native engine could not load.|ネイティブエンジンを読み込めません。|네이티브 엔진을 불러올 수 없습니다.|No se ha podido cargar el motor nativo.
+模型无法加载或推理退出（|Model failed to load or inference exited (|モデルのロードまたは推論に失敗（|모델 로드 또는 생성 실패 (|El modelo o la inferencia han fallado (
+）。请检查文件是否完整、是否为兼容的单文件指令 GGUF。|). Check that this is a complete, compatible single-file instruction GGUF.|）。互換性のある単一の指示モデル GGUF か確認してください。|). 호환되는 단일 파일 GGUF 지시 모델인지 확인하세요.|). Comprueba que sea un GGUF de instrucciones compatible, completo y de un solo archivo.
+模型没有返回文字。|The model returned no text.|モデルの出力が空です。|모델이 텍스트를 반환하지 않았습니다.|El modelo no devolvió texto.
+已在设备上完成。|Completed on device.|端末上で完了しました。|기기에서 완료했습니다.|Completado en el dispositivo.
+已生成草稿，请在运行前核对。|Draft ready. Review before running.|下書きができました。実行前に確認してください。|초안이 준비되었습니다. 실행 전에 검토하세요.|Borrador listo. Revísalo antes de ejecutarlo.
+停止当前任务并返回？|Stop this task and go back?|処理を停止して戻りますか？|작업을 중지하고 돌아갈까요?|¿Detener la tarea y volver?
+停止并返回|Stop and go back|停止して戻る|중지하고 돌아가기|Detener y volver
+继续|Continue|続ける|계속|Continuar
+端侧推理需要 Android 9 或更高版本。|On-device AI requires Android 9 or later.|端末内推論には Android 9 以降が必要です。|기기 내 추론에는 Android 9 이상이 필요합니다.|La IA local requiere Android 9 o posterior.
+当前设备未提供可用的 ARM64 推理引擎。|An ARM64 engine is not available on this device.|この端末では ARM64 エンジンを使用できません。|이 기기에서는 ARM64 엔진을 사용할 수 없습니다.|El motor ARM64 no está disponible en este dispositivo.
+未能删除模型。|Could not remove the model.|モデルを削除できません。|모델을 삭제할 수 없습니다.|No se pudo quitar el modelo.
+模型站返回 HTTP |Model host returned HTTP |配布元が返した HTTP コード：|모델 저장소 HTTP 오류 |Respuesta HTTP del repositorio: 
+；可在电脑上下载 GGUF 后导入。|. Alternatively, download the GGUF on your computer and import it.|。PC で GGUF をダウンロードしてインポートすることもできます。|. 또는 컴퓨터에서 GGUF를 받아 가져오세요.|. También puedes descargar el GGUF en tu ordenador e importarlo.
+本地 GGUF|Local GGUF|ローカル GGUF|로컬 GGUF|GGUF local
+无法打开所选文件。|Cannot open the selected file.|選択したファイルを開けません。|선택한 파일을 열 수 없습니다.|No se pudo abrir el archivo.
+空间不足，导入该模型至少需要 |Not enough storage. Free at least |空き容量不足です。必要容量：|저장 공간이 부족합니다. 필요한 공간: |No hay espacio. Libera al menos 
+所选文件不是受支持的 GGUF v2/v3 模型。|Select a supported GGUF v2/v3 model.|対応する GGUF v2/v3 モデルを選択してください。|지원되는 GGUF v2/v3 모델을 선택하세요.|Selecciona un modelo GGUF v2/v3 compatible.
+传输不完整，请重新下载或导入。|Transfer incomplete. Download or import the file again.|転送が途中で終了しました。もう一度お試しください。|전송이 중단되었습니다. 다시 다운로드하거나 가져오세요.|Transferencia incompleta. Descarga o importa el archivo de nuevo.
+无法保存模型。|Cannot save the model.|モデルを保存できません。|모델을 저장할 수 없습니다.|No se pudo guardar el modelo.
+本次对话|Session history|今回の履歴|세션 기록|Historial de sesión
+继续追问|Follow up|続けて質問|이어서 질문|Continuar
+已附上一条问答；可继续输入问题。|Previous turn attached. Enter your follow-up.|前の応答を添付しました。追加の質問を入力してください。|이전 문답을 첨부했습니다. 후속 질문을 입력하세요.|Turno anterior adjunto. Escribe tu pregunta.
+清除引用|Clear context|引用を解除|참조 해제|Quitar referencia
+下载推荐模型 · 1.12 GB|Download recommended model · 1.12 GB|推奨モデルをダウンロード · 1.12 GB|권장 모델 다운로드 · 1.12 GB|Descargar modelo recomendado · 1.12 GB
+重试下载|Retry download|再試行|다시 다운로드|Reintentar descarga
+取消下载|Cancel download|ダウンロードを取り消す|다운로드 취소|Cancelar descarga
+取消此下载并移除未完成的文件？|Cancel this download and discard the partial file?|ダウンロードを取り消して未完了のファイルを削除しますか？|다운로드를 취소하고 부분 파일을 삭제할까요?|¿Cancelar la descarga y eliminar el archivo parcial?
+等待开始|Queued|待機中|대기 중|En cola
+正在下载|Downloading|ダウンロード中|다운로드 중|Descargando
+正在校验模型文件…|Verifying the model file…|モデルを検証中…|모델 파일 확인 중…|Verificando el modelo…
+等待网络|Waiting for network|ネットワーク接続待ち|네트워크 대기 중|Esperando conexión
+等待 Wi-Fi|Waiting for Wi-Fi|Wi-Fi 待ち|Wi-Fi 대기 중|Esperando Wi-Fi
+网络暂时不可用，系统将重试|Connection interrupted; Android will retry|接続が中断しました。自動的に再試行します|연결이 끊겼습니다. 시스템이 다시 시도합니다|Conexión interrumpida; Android reintentará
+下载会在后台继续|Download continues in the background|バックグラウンドでも続行します|백그라운드에서 계속 다운로드합니다|La descarga continúa en segundo plano
+下载失败：存储空间不足，请释放空间后重试。|Not enough storage. Free space and retry.|空き容量が不足しています。空きを確保して再試行してください。|저장 공간이 부족합니다. 공간을 확보한 뒤 다시 시도하세요.|Espacio insuficiente. Libera espacio y reintenta.
+下载失败：系统无法恢复此传输，可重新下载。|This transfer could not resume. Retry to start a new download.|転送を再開できません。再試行して新たにダウンロードしてください。|전송을 재개할 수 없습니다. 새로 다운로드하세요.|No se pudo reanudar la transferencia. Reintenta la descarga.
+模型文件与官方版本不符，请重新下载。|The file does not match the official model. Download it again.|モデルが公式ファイルと一致しません。再度ダウンロードしてください。|공식 모델과 파일이 일치하지 않습니다. 다시 다운로드하세요.|El archivo no coincide con el modelo oficial. Vuelve a descargarlo.
+找不到下载文件，请重试。|Downloaded file not found. Retry the download.|ダウンロードしたファイルが見つかりません。再試行してください。|다운로드 파일을 찾을 수 없습니다. 다시 시도하세요.|No se encuentra el archivo. Reintenta la descarga.
+无法访问系统下载服务，请检查系统设置后重试。|Android Download Manager is unavailable. Check system settings and retry.|システムのダウンロードサービスを確認して再試行してください。|시스템 다운로드 서비스를 확인한 뒤 다시 시도하세요.|El gestor de descargas no está disponible. Revisa la configuración y reintenta.
+无法写入模型目录，请检查可用空间后重试。|Cannot save the model. Check available storage and retry.|モデルを保存できません。空き容量を確認して再試行してください。|모델을 저장할 수 없습니다. 저장 공간을 확인한 뒤 다시 시도하세요.|No se puede guardar el modelo. Comprueba el espacio y reintenta.
+模型服务器返回 HTTP |Model server returned HTTP |配布元の HTTP 応答：|모델 서버 HTTP 응답: |Respuesta HTTP del servidor: 
+下载失败，代码 |Download failed, code |ダウンロード失敗。コード：|다운로드 실패, 코드: |Error de descarga, código 
+已有一个模型正在下载。|A model download is already in progress.|別のモデルをダウンロード中です。|이미 모델을 다운로드하고 있습니다.|Ya hay una descarga en curso.
+模型下载中断，请检查网络后重试。|The transfer was interrupted. Check your connection and retry.|通信が中断しました。接続を確認して再試行してください。|다운로드가 중단되었습니다. 연결을 확인한 뒤 다시 시도하세요.|La descarga se interrumpió. Comprueba la conexión y reintenta.
+模型服务器重定向失败，请稍后重试。|The model host could not redirect the download. Retry later.|配布元への転送に失敗しました。後で再試行してください。|모델 서버 리디렉션에 실패했습니다. 나중에 다시 시도하세요.|Falló la redirección del servidor. Reintenta más tarde.

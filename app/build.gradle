@@ -1,0 +1,34 @@
+plugins { id 'com.android.application' }
+android {
+    namespace 'dev.fieldsql.app'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'dev.fieldsql.app'
+        minSdk 26
+        targetSdk 35
+        versionCode 2
+        versionName '0.1.1'
+    }
+    compileOptions { coreLibraryDesugaringEnabled true; sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    if (System.getenv('FIELDSQL_KEYSTORE')) {
+        signingConfigs {
+            localRelease {
+                storeFile file(System.getenv('FIELDSQL_KEYSTORE'))
+                storePassword System.getenv('FIELDSQL_SIGN_PASS')
+                keyAlias 'fieldsql'
+                keyPassword System.getenv('FIELDSQL_SIGN_PASS')
+            }
+        }
+        buildTypes.release.signingConfig = signingConfigs.localRelease
+    }
+    packaging {
+        jniLibs { useLegacyPackaging = true; keepDebugSymbols += ['**/*.so'] }
+        resources { merges += ['META-INF/services/java.sql.Driver']; excludes += ['META-INF/INDEX.LIST','META-INF/DEPENDENCIES','META-INF/versions/**/module-info.class','META-INF/versions/**/OSGI-INF/MANIFEST.MF'] }
+    }
+}
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
+    implementation project(':db')
+    implementation project(':ai')
+    implementation 'androidx.biometric:biometric:1.1.0'
+}

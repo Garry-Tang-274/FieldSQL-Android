@@ -1,0 +1,5 @@
+-keep class dev.fieldsql.db.TunnelSocketFactory { public <init>(); }
+-keep class com.jcraft.jsch.** { *; }
+-keep class org.mariadb.jdbc.** implements org.mariadb.jdbc.authentication.AuthenticationPlugin { *; }
+-keep class org.mariadb.jdbc.** implements org.mariadb.jdbc.tls.TlsSocketPlugin { *; }
+-keep class org.postgresql.ssl.DefaultJavaSSLFactory { *; }

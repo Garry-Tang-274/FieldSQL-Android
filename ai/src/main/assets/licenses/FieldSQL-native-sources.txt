@@ -1,0 +1,41 @@
+FieldSQL · Android arm64 inference runtime
+========================================
+These files accompany the native binaries in ai/src/main/jniLibs/arm64-v8a
+and their copies packaged inside the Android APK.
+
+llama.cpp / ggml — b12774
+  https://github.com/ggml-org/llama.cpp/releases/tag/b12774
+  Artifact: llama-b12774-bin-android-arm64.tar.gz (generic arm64, not Snapdragon).
+  FieldSQL renames llama-completion to libfieldsql-runner.so and adds $ORIGIN
+  to the native search path. See ai/tools/prepare_native.py.
+  License: llama.cpp.txt. nlohmann/json: jsonhpp.txt.
+
+cpp-httplib — 0.67.0, vendored by llama.cpp b12774, MIT
+  Source and copyright: https://github.com/ggml-org/llama.cpp/blob/b12774/vendor/cpp-httplib/httplib.h
+  License: https://github.com/ggml-org/llama.cpp/blob/b12774/vendor/cpp-httplib/LICENSE
+  Complete upstream license: cpp-httplib-MIT.txt.
+
+BoringSSL — 0.20261105.0, compiled into libllama-common.so
+  The Android arm64 release enables LLAMA_BUILD_BORINGSSL; the vendored
+  cpp-httplib CMake recipe selects BoringSSL tag 0.20261105.0:
+  https://github.com/ggml-org/llama.cpp/blob/b12774/.github/workflows/release.yml#L462-L528
+  https://github.com/ggml-org/llama.cpp/blob/b12774/vendor/cpp-httplib/CMakeLists.txt#L40-L80
+  https://boringssl.googlesource.com/boringssl/+/refs/tags/0.20261105.0/LICENSE
+  Complete upstream license and support-code notices: BoringSSL-LICENSE.txt.
+
+Android NDK r29 — 29.0.14206865, LLVM runtime libraries
+  Release workflow above and ELF .note.android.ident identify NDK r29,
+  build 14206865; ELF .comment identifies Android LLVM commit
+  5e96669f06077099aa41290cdb4c5e6fa0f59349, Clang 21.0.0.
+  https://android.googlesource.com/toolchain/llvm-project/+/5e96669f06077099aa41290cdb4c5e6fa0f59349/
+  Each of the following files is the original LICENSE.TXT from the
+  corresponding directory at that revision, including the LLVM exceptions
+  and legacy notices. The ELF objects contain std::__ndk1 C++ definitions,
+  __cxa_throw, _Unwind_RaiseException and compiler runtime helpers.
+    libcxx/       Android-NDK-libcxx-LICENSE.txt
+    libcxxabi/    Android-NDK-libcxxabi-LICENSE.txt
+    libunwind/    Android-NDK-libunwind-LICENSE.txt
+    compiler-rt/  Android-NDK-compiler-rt-LICENSE.txt
+
+Qwen model weights are separate downloads. Their license and attribution
+are available with the model files in ai/models/; the APK contains no weights.

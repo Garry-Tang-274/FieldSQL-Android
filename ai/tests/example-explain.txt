@@ -1,0 +1,14 @@
+SQL语句的中文解释如下：
+
+1. `SELECT SUM(amount)`: 这个语句的意思是从 `sales` 表中选择 `amount` 列的总和。
+2. `FROM sales`: 这个语句的意思是从 `sales` 表中获取数据。
+
+执行这个SQL语句后，结果将是 `sales` 表中 `amount` 列的总和。
+
+**结果**：`SUM(amount)` 的结果是 `sales` 表中 `amount` 列的总和。
+
+**分组**：没有分组。
+
+**过滤**：没有过滤。
+
+**副作用**：没有副作用。

@@ -1,0 +1,1 @@
+SELECT city, SUM(amount) FROM sales GROUP BY city
