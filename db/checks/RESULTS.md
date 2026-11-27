@@ -30,4 +30,8 @@ Windows OpenJDK 21.0.13.1 实际调用 APK 数据库模块的同一份 Java 源�
 
 导入检查覆盖单 DER、单/多 PEM、带 BOM 或 CRLF 的 PEM，以及私钥、证书混入私钥、非 CA 叶证书、尾随字节和超限文件的拒绝。上述为真实服务器的桌面驱动层验证。复运行：在专用 `fixtures.py --hold` 启动的新实例上，执行 `check-private-ca.py <本次 ui.json>`。
 
+在最终 Android Release APK 中，通过系统文件选择器导入专用 CA 后，以受信任 IP 连接 Oracle MySQL 8.4.7，实际读取了 `qa_catalog.id=7`。选择无关 CA 或移除所需 CA 时连接失败；通过端口映射改用不在证书 SAN 中的 IP 连接同一实例时，得到主机名不匹配的提示。改回证书内的 IP 后再次读取同一行。测试没有使用用户的云数据库。
+
+`check-hostnames.py` 使用真实 X.509 叶证书检查了仅 CN 正确但缺少 SAN、CN 正确但 SAN 错误、用 DNS SAN 冒充 IP 的拒绝；IPv6 等价地址和只跨一个标签的 DNS 通配符匹配正确。该版不调用驱动的桌面 JNDI/CN 后备路径。三台专用数据库及 SSH 服务均已关停，本次临时目录已清理。
+
 
