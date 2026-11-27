@@ -11,7 +11,8 @@ try (Database db = Databases.openRemote("postgres","db.example.org",5432,
 }
 ```
 
-- 远程支持 PostgreSQL、MySQL 与 MariaDB；仅连接用户指定的主机和数据库。TLS 开关默认为开时，信任 Android 证书库并验证数据库主机名；不会自动降级到明文。对使用私有 CA 的服务器，须保证该 CA 受应用的 Android 网络安全配置认可。
+- 远程支持 PostgreSQL、MySQL 与 MariaDB。使用公开信任的服务器时，开启 TLS，沿用系统证书库。云数据库提供了专用 CA 时，可为该连接导入其 X.509 CA 公钥证书（单个 DER，或含一张/多张证书的 PEM，256 KiB 以内）。该连接只信任导入的 CA，其他连接与 Android 系统设置不变。服务器证书的主题备用名称（SAN）必须匹配配置中的数据库域名或 IP：DNS 地址认 DNS SAN，IP 认 IP SAN；旧证书仅有 CN 不够。无匹配 SAN、证书链无效均拒绝连接，不回退明文或忽略验证。带私钥、服务器叶证书或混杂其他内容的文件不会导入。
+- Java 调用：`Databases.normalizeCa(bytes)` 返回规范 PEM；`Databases.openRemote(kind, host, port, database, user, password, true, sshConfig, caBytes)` 应用到本次连接及其取消查询用的控制连接。末参为 null 表示系统信任，传入 CA 却关闭 TLS 会报错。
 - SSH 私钥通过 Android 文件选择器传入，另需可信来源给出的 OpenSSH `SHA256:…` 主机公钥指纹。私钥、私钥口令和数据库密码都不由本模块持久化。隧道内的 TLS 检查同样针对数据库的真实域名，而非 127.0.0.1。JSch 会在连接建立后关闭本机临时转发监听，保持已建立的通道。
 - `setQueryTimeoutSeconds(1..3600)` 只用于远端，默认 60 秒；PostgreSQL 用服务端 statement_timeout。MySQL/MariaDB 超时由另一个相同身份、相同 TLS/SSH 路径的连接请求取消这条查询。对耗时写操作，客户端超时后应核对实际提交结果，再决定是否重试。
 - SQLite 库以名字存放于应用私有目录。导入只读原 URI，创建私有副本；同名拒绝覆盖。导入前应从源应用导出已完成 checkpoint 的单文件快照，而不是从运行中的 WAL 库只复制主文件。卸载应用时，系统会清除私有工作副本。

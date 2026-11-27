@@ -1,5 +1,5 @@
 """Prepare pinned desktop fixtures and Java QA classes. All downloaded files stay under db/build/probe."""
-import pathlib,subprocess,sys,tarfile,urllib.request,zipfile,os
+import pathlib,subprocess,sys,tarfile,urllib.request,zipfile,os,shutil
 module=pathlib.Path(__file__).resolve().parent.parent
 b=module/'build/probe'; b.mkdir(exist_ok=True,parents=True)
 base='https://repo.maven.apache.org/maven2/'
@@ -32,4 +32,5 @@ for x in items:
     else:jars.append(str(target))
 (b/'classes').mkdir(exist_ok=True)
 subprocess.run(['javac','-encoding','UTF-8','-cp',os.pathsep.join(jars),'-d',str(b/'classes'),*[str(x) for x in (module/'src/main/java').rglob('*.java')]],check=True)
+shutil.copytree(module/'src/main/resources',b/'classes',dirs_exist_ok=True)
 print('Ready:',b)

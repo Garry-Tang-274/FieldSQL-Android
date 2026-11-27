@@ -2,27 +2,41 @@
 
 在 Android 手机或平板上浏览 PostgreSQL、MySQL、MariaDB 和 SQLite，也可以让设备本地的小模型根据表结构写 SQL。无需 FieldSQL 账户。
 
-**[下载 Android 安装包（ARM64）](https://github.com/Garry-Tang-274/FieldSQL-Android/releases/download/v0.1.1/FieldSQL-0.1.1-arm64.apk)** · [所有版本](https://github.com/Garry-Tang-274/FieldSQL-Android/releases)
+**[下载 Android 安装包（ARM64）](https://github.com/Garry-Tang-274/FieldSQL-Android/releases/download/v0.1.2/FieldSQL-0.1.2-arm64.apk)** · [0.1.2 更新说明](docs/release-0.1.2.md) · [所有版本](https://github.com/Garry-Tang-274/FieldSQL-Android/releases)
 
-第一次打开可以选 **Field Notes**；平板再点右侧 **打开工作区**。执行预置查询，会从本机的 SQLite 示例库读出杭州 800、上海 792、成都 536。
+**第一次使用，先看一张表：** 在 **数据源** 找到本机示例库 **Field Notes**。手机点数据源行下方的 **浏览表**；平板先选中数据源，再点右侧的 **浏览表**。点表名 `orders` 就能看原始订单，不用先写 SQL。要试汇总查询，打开该库的 SQL 工作区并执行预置语句，结果应为杭州 800、上海 792、成都 536。
 
 ![平板横屏：左侧浏览表结构，右侧编辑 SQL 并查看结果](docs/screenshots/tablet-workbench.png)
 
 ## 让 AI 在手机上写一条 SQL
 
-1. 在 **查询 → 端侧 AI** 点 **[下载推荐模型](docs/screenshots/download-model.png)**。也可以从 **设置 → 端侧 AI** 进入，无须先连接数据库。
-2. 推荐的 Qwen2.5-Coder 1.5B 下载量为 **1.12 GB**，建议使用 Wi-Fi，并至少留出模型大小之外的可用空间。模型从 Qwen 的官方 Hugging Face 仓库下载到这台设备，不用在电脑上另下或传文件。下载完成后应用选用该模型；已有 GGUF 的用户仍可手动导入。
+1. 在 **查询 → 端侧 AI** 点 **下载推荐模型 · 1.12 GB**（[界面示例](docs/screenshots/download-model.png)）。也可以从 **设置 → 端侧 AI** 进入，无须先连接数据库。
+2. 推荐的 Qwen2.5-Coder 1.5B 下载量为 **1.12 GB**，建议使用 Wi-Fi，并至少预留 1.12 GB 存储空间。模型从 Qwen 的官方 Hugging Face 仓库下载到这台设备，不用在电脑上另下或传文件。下载完成后应用选用该模型；已有 GGUF 的用户仍可手动导入。
 3. 在 Field Notes 中输入 **“按地区汇总订单销售额，按总额从高到低排序”**。先看生成的 SQL 是否使用 `GROUP BY region` 和降序排序，再点 **放入编辑器 → 执行 SQL**。推理时不需要联网、API Key 或电脑服务。
 
-APK 面向 **64 位 ARM Android 8.0+**，本地 AI 需要 **Android 9.0+** 和足够的可用内存。使用 CPU 推理；1.5B 是推荐模型，空间紧张可选 0.5B。数据库连接可访问远程服务器，只有模型推理和 SQLite 示例不依赖外网。手机的系统 WebView 应保持更新。
+APK 面向 **64 位 ARM Android 8.0+**，本地 AI 需要 **Android 9.0+** 和足够的可用内存。使用 CPU 推理；1.5B 是推荐模型，空间紧张可选 0.5B。数据库连接可访问远程服务器，本地 SQLite 数据库和已下载模型的推理不依赖外网。手机的系统 WebView 应保持更新。
+
+## 浏览表，再回到原来的工作位置
+
+已连接时，点导航中的 **浏览表**，再点表名，默认打开[数据表格](docs/screenshots/table-rows.png)。在平板 SQL 工作区，也可以点左侧结构树中表名旁的**网格按钮**直接看行；点列名则把该列插入 SQL 光标处。列、索引和建表语句可在对象详情内切换。
+
+在**同一连接**内往返查询、浏览表等页面，会保留当前表、页码、筛选和未提交的草稿；SQL 标签分别保留选区、光标、撤销记录和编辑器内的滚动位置。切库、断开连接或结束进程后，请不要依赖这些临时状态。要长久保留 SQL，在查询编辑器点 **收藏**，以后可从 **查询库** 找回。
+
+查询编辑器支持表列补全和外接键盘 Ctrl/Cmd+Enter。查询库还保留最近 500 次执行。写入和改表前会显示 SQL 确认；修改已有行需要准确主键。**CSV/XLSX** 导出的是当前查询结果或当前数据页，不是整库备份。
 
 ## 连接自己的数据库
 
-**数据源 → 新建连接**，选择 PostgreSQL、MySQL 或 MariaDB，填写服务器、端口、库名和数据库账户。默认要求 TLS 并验证数据库主机名。需要跳板机时打开 **SSH 私钥隧道**，选择私钥，填写管理员提供的 SSH 主机指纹。SSH 指纹与数据库 TLS 证书是两项不同的身份检查；不要因为证书错误就关闭校验。连接配置及密码以 Android Keystore 保护的密钥加密保存在本机。
+在 **数据源 → 新建连接** 选择 PostgreSQL、MySQL 或 MariaDB，填写数据库域名、端口、库名、账号和密码。默认开启 TLS（传输层安全协议），校验服务器证书和主机名。需要 SSH 跳板机时，再选择 SSH 私钥并填入管理员提供的主机指纹。SSH 指纹不代替数据库证书。连接配置和凭据由 Android Keystore 保护的密钥加密保存在本机。
 
-打开连接后，顶部连接名可切库、建库、刷新结构或断开。**对象**页查看表、视图、函数、过程，以及列、索引和建表语句。修改已有行须有准确主键；无主键对象仅供浏览。显示上限控制一次返回的行数，不限制行编辑次数。导出的是当前查询结果或当前数据页，可以选择保存 CSV/XLSX 或交给 Android 分享。
+**如果提示「无法验证服务器证书」：**
 
-**查询**页支持多标签、语法高亮、表列补全和外接键盘 Ctrl/Cmd+Enter；**查询库**保留收藏和最近 500 次执行。写入与改表操作会显示 SQL 确认。平板宽窗把表结构放在编辑器旁边；点列名即可插入当前光标位置。缩成窄分屏后，编辑器优先占用可用宽度。
+1. 向数据库服务商或管理员取得**签发该服务器证书的 CA 证书**。FieldSQL 支持 X.509 PEM（一张或多张 CA）和单张 DER；`.crt` 文件也要符合其中一种格式。不要选择 ZIP、服务器叶证书、私钥或 Java 密钥库。
+2. 点失败提示中的 **导入 CA 证书**，在 TLS 区域选择文件，再点 **保存并重连**。应用会自动重试刚才的操作，打开原先要看的表列表或 SQL 工作区。
+3. 如果是提前配置，从数据源进入 **编辑连接 → TLS → 导入 CA 证书**，选择文件后点 **保存**。接着点该数据源的 **浏览表** 即可使用新配置连接。[查看证书入口截图](docs/screenshots/connection-ca.png)
+
+证书只用于这条连接，不改变 Android 系统信任设置。若提示**主机名不匹配**，请使用服务器证书「使用者可选名称」（SAN）里的数据库域名；用 IP 连接时，证书须列有该 IP。只有旧式通用名称（CN）而没有匹配 SAN 的服务器证书需重新签发，重复导入 CA 无法修复名称错误。
+
+**阿里云 RDS MySQL：** 使用已开启的云端证书时，在 [RDS 实例列表](https://rdsnext.console.aliyun.com/rdsList/basic) 选择地域和实例 ID，进入 **数据安全性 → SSL → 下载CA证书**。解压并选择 `ApsaraDB-CA-Chain.pem`，不选同包的 JKS 或 P7B。连接时填写启用该证书的内网或外网域名。若实例使用**自定义证书**，应向管理员取得其签发 CA，而不是套用云端证书包。若 SSL 尚未开通，先与管理员安排变更：开启或关闭会导致实例重启或切换。[阿里云云端证书说明](https://help.aliyun.com/zh/rds/apsaradb-rds-for-mysql/configure-a-cloud-certificate-to-enable-ssl-encryption#1bf77be069zxo) · [自定义证书说明](https://help.aliyun.com/zh/rds/apsaradb-rds-for-mysql/configure-a-custom-certificate)
 
 ## 对照 MonoDB
 

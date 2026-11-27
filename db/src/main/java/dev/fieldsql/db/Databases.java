@@ -46,5 +46,8 @@ public final class Databases {
         }finally{if(tmp.exists())tmp.delete();}
     }
     public static Database openRemote(String kind,String host,int port,String database,String user,String password,boolean tls)throws Exception{return openRemote(kind,host,port,database,user,password,tls,null);}
-    public static Database openRemote(String kind,String host,int port,String database,String user,String password,boolean tls,SshConfig ssh)throws Exception{return Remote.open(kind,host,port,database,user,password,tls,ssh);}
+    public static Database openRemote(String kind,String host,int port,String database,String user,String password,boolean tls,SshConfig ssh)throws Exception{return openRemote(kind,host,port,database,user,password,tls,ssh,null);}
+    public static Database openRemote(String kind,String host,int port,String database,String user,String password,boolean tls,SshConfig ssh,byte[] caBundle)throws Exception{return Remote.open(kind,host,port,database,user,password,tls,ssh,caBundle);}
+    /** Normalize public CA certificates only; no keystore, private key or application-global trust changes. */
+    public static byte[] normalizeCa(byte[] input)throws Exception{return PrivateCa.normalize(input);}
 }

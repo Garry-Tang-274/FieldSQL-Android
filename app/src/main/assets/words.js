@@ -5,7 +5,25 @@ window.lex={};
 for(const row of `
 conn|连接|Connections|接続|연결|Conexiones
 sql|查询|Query|クエリ|쿼리|Consulta
-objects|对象|Objects|オブジェクト|객체|Objetos
+objects|浏览表|Browse tables|テーブル閲覧|테이블 보기|Ver tablas
+browseSource|选择要浏览的数据源|Choose a data source to browse|閲覧する接続を選択|조회할 데이터 소스를 선택하세요|Elige una fuente de datos
+ca|CA 证书|CA certificate|CA 証明書|CA 인증서|Certificado CA
+systemCA|系统信任|System trust|システムの信頼設定|시스템 기본 신뢰|Confianza del sistema
+importCA|导入 CA 证书|Import CA certificate|CA 証明書を読み込む|CA 인증서 가져오기|Importar certificado CA
+replaceCA|更换|Replace|変更|교체|Cambiar
+removeCA|移除|Remove|取り除く|제거|Quitar
+caHelp|仅用于此连接。选择数据库服务商提供的 PEM 或 DER 证书。|For this connection only. Choose a PEM or DER certificate from your database provider.|この接続専用です。提供元の PEM または DER 証明書を選びます。|이 연결에만 적용됩니다. 공급자의 PEM 또는 DER 인증서를 선택하세요.|Solo para esta conexión. Elige el certificado PEM o DER de tu proveedor.
+connectFailed|连接失败|Connection failed|接続できません|연결 실패|Error de conexión
+trustError|无法验证服务器证书。请向数据库服务商取得此实例的 CA 证书，再导入到这个连接。|The server certificate is not trusted. Import the CA for this instance from your database provider.|サーバー証明書を検証できません。提供元からこのインスタンスの CA 証明書を入手し、読み込んでください。|서버 인증서를 신뢰할 수 없습니다. 공급자가 제공한 이 인스턴스의 CA를 가져오세요.|No se confía en el certificado del servidor. Importa la CA de esta instancia desde tu proveedor.
+hostnameError|证书上的主机名与连接地址不匹配。请使用服务商为此证书配置的数据库域名。|The host does not match the certificate. Use the database endpoint configured for this certificate.|ホスト名が証明書と一致しません。この証明書に設定された接続先を使ってください。|호스트 이름이 인증서와 일치하지 않습니다. 인증서에 설정된 데이터베이스 주소를 사용하세요.|El nombre de host no coincide con el certificado. Usa el endpoint configurado para este certificado.
+expiredCert|服务器证书已过期。请核对设备时间，并请管理员检查证书有效期。|The certificate has expired. Check the device time and ask the administrator to check the certificate.|証明書の期限切れです。端末の時刻と証明書の有効期限を確認してください。|인증서가 만료됐습니다. 기기 시간과 인증서 유효기간을 확인하세요.|El certificado ha caducado. Comprueba la hora del dispositivo y la validez del certificado.
+futureCert|服务器证书尚未生效。请核对设备时间和证书生效日期。|The certificate is not yet valid. Check the device time and the certificate start date.|証明書はまだ有効ではありません。時刻と有効開始日を確認してください。|인증서가 아직 유효하지 않습니다. 기기 시간과 시작일을 확인하세요.|El certificado aún no es válido. Comprueba la hora y la fecha de inicio del certificado.
+leaveDraft|放弃未提交的表格编辑？|Discard the unsubmitted table edit?|未確定のテーブル編集を破棄しますか？|저장하지 않은 테이블 편집을 버릴까요?|¿Descartar la edición de tabla pendiente?
+draftLoss|继续会关闭当前草稿，不会修改数据库。|Continuing closes the draft without writing to the database.|続けるとデータベースに書き込まずに下書きを閉じます。|계속하면 데이터베이스에 쓰지 않고 초안을 닫습니다.|Si continúas, el borrador se cerrará sin modificar la base de datos.
+discardContinue|放弃并继续|Discard and continue|破棄して続ける|버리고 계속|Descartar y continuar
+technical|技术详情|Technical details|技術情報|기술 정보|Detalles técnicos
+saveRetry|保存并重连|Save and reconnect|保存して再接続|저장 후 다시 연결|Guardar y reconectar
+editConnection|编辑连接|Edit connection|接続を編集|연결 편집|Editar conexión
 library|查询库|Library|ライブラリ|보관함|Biblioteca
 offline|未连接|Disconnected|未接続|연결 안 됨|Sin conexión
 home|数据库工作台|Database workspace|データベース管理|데이터베이스 작업대|Espacio de datos

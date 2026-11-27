@@ -76,7 +76,7 @@
 .fx-layout.fx-wide{display:grid;grid-template-columns:minmax(160px,25%) minmax(0,1fr);column-gap:20px;align-items:start}
 .fx-wide:not(.fx-open) .fx-detail,.fx-wide.fx-open .fx-side{display:block}
 .fx-wide .fx-side{padding-inline-end:12px;border-inline-end:1px solid var(--fx-line)}
-.fx-wide .fx-list{max-height:70vh;overflow-y:auto}
+.fx-wide .fx-list{max-height:70vh;overflow-y:auto;overscroll-behavior-y:contain;scrollbar-gutter:stable}
 .fx-wide .fx-heading{padding-top:3px}
 .fx-wide .fx-back{display:none}
 @media(prefers-reduced-motion:reduce){.fx-group-head:before{transition:none}}

@@ -20,7 +20,9 @@ final class Remote {
         if(s.length()>253||s.isEmpty())throw new IllegalArgumentException("主机名无效");return s;
     }
     static void port(int p){if(p<1||p>65535)throw new IllegalArgumentException("端口须在 1–65535 之间");}
-    static Database open(String kind,String host,int port,String database,String user,String password,boolean tls,Databases.SshConfig sc)throws Exception{
+    static Database open(String kind,String host,int port,String database,String user,String password,boolean tls,Databases.SshConfig sc,byte[] caBundle)throws Exception{
+        if(caBundle!=null&&!tls)throw new IllegalArgumentException("使用自定义 CA 时必须开启 TLS");
+        String pem=caBundle==null?null:new String(PrivateCa.normalize(caBundle),java.nio.charset.StandardCharsets.US_ASCII);
         String k=kind==null?"":kind.toLowerCase(Locale.ROOT);boolean pg=k.equals("postgres")||k.equals("postgresql");
         if(!pg&&!k.equals("mysql")&&!k.equals("mariadb"))throw new IllegalArgumentException("请选择 PostgreSQL、MySQL 或 MariaDB");
         String dest=host(host);port(port);
@@ -32,10 +34,14 @@ final class Remote {
         String url;
         if(pg){url="jdbc:postgresql://"+jdbcHost+":"+port+"/"+URLEncoder.encode(database,"UTF-8").replace("+","%20");
             p.setProperty("sslmode",tls?"verify-full":"disable");
-            if(tls)p.setProperty("sslfactory","org.postgresql.ssl.DefaultJavaSSLFactory"); // Android/Java trust store
+            if(tls)p.setProperty("sslfactory",pem==null?"org.postgresql.ssl.DefaultJavaSSLFactory":ProfilePgSslFactory.class.getName());
+            if(tls)p.setProperty("sslhostnameverifier",DatabaseHostname.class.getName());
+            if(pem!=null)p.setProperty(ProfilePgSslFactory.PEM_PROPERTY,pem);
             p.setProperty("stringtype","unspecified");p.setProperty("gssEncMode","disable");
         }else{url="jdbc:mariadb://"+jdbcHost+":"+port+"/"+database;
             p.setProperty("useSsl",Boolean.toString(tls));p.setProperty("trustServerCertificate","false");
+            if(tls){p.setProperty("tlsSocketType",MariaVerifiedTls.TYPE);p.setProperty(MariaVerifiedTls.EXPECTED,dest);}
+            if(pem!=null)p.setProperty("serverSslCert",pem); // Connector/J 2.7: inline PEM bundle; no path or global trust store.
             p.setProperty("disableSslHostnameVerification","false");p.setProperty("allowLocalInfile","false");
             p.setProperty("allowMultiQueries","false");p.setProperty("allowPublicKeyRetrieval","false");p.setProperty("autoReconnect","false");
         }

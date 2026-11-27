@@ -24,4 +24,10 @@ Windows OpenJDK 21.0.13.1 实际调用 APK 数据库模块的同一份 Java 源�
 
 现场发现旧 MariaDB 驱动注册入口要求 Android 没有的 java.sql.DriverAction。新版改为使用该驱动本身的公开连接工厂后，MariaDB 与 MySQL 都通过了 Android APK 实测；没有以桌面通过代替修复。
 
+## 每连接私有 CA · 0.1.2
+
+在新的临时 PostgreSQL 17.10、MariaDB 10.11.5 和 Oracle MySQL 8.4.7 上，服务端发送叶证书及中间证书，客户端配置独立私有根。三引擎均在直连 TLS 和 SSH + TLS 下成功读取已知行。对同一组运行中的服务器，错误根、系统默认不信任该根、以及正确根配错主机名都被拒绝；同时打开的正确连接仍可查询。第二个测试 JVM 把正确根明确加入其系统信任：旧接口正常连接，但显式提供错误根的连接仍然拒绝。MySQL/MariaDB 的超时控制连接同样使用该配置；直接或经 SSH 取消慢查询后，原连接均可继续查询。
+
+导入检查覆盖单 DER、单/多 PEM、带 BOM 或 CRLF 的 PEM，以及私钥、证书混入私钥、非 CA 叶证书、尾随字节和超限文件的拒绝。上述为真实服务器的桌面驱动层验证。复运行：在专用 `fixtures.py --hold` 启动的新实例上，执行 `check-private-ca.py <本次 ui.json>`。
+
 

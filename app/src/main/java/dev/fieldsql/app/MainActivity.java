@@ -1,8 +1,10 @@
 package dev.fieldsql.app;
 import android.app.*;
 import android.content.*;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.*;
+import android.provider.OpenableColumns;
 import android.util.Base64;
 import android.view.*;
 import android.webkit.*;
@@ -22,6 +24,9 @@ public final class MainActivity extends FragmentActivity {
  final ExecutorService jobs=Executors.newSingleThreadExecutor();
  WebView web; Vault vault; Database db; String session="",kind="";
  int pendingId=-1; String pendingAction,pendingName; byte[] pendingBytes; JSONObject pendingArgs;
+ // Owned by the serial jobs executor. Only the display name and opaque token reach the form.
+ static final String CA_PEM="caPem", CA_NAME="caName";
+ String stagedCaToken,stagedCaName; byte[] stagedCa;
  boolean prepared,openShelf; volatile boolean ended;
  public void onCreate(Bundle b){super.onCreate(b);openShelf=getIntent().getBooleanExtra("shelf",false);
    try{vault=new Vault(this);}catch(Exception e){new AlertDialog.Builder(this).setMessage("无法打开本机加密存储："+e.getLocalizedMessage()).setPositiveButton("退出",(x,y)->finish()).show();return;}
@@ -43,14 +48,61 @@ public final class MainActivity extends FragmentActivity {
  final class Bridge {
   @JavascriptInterface public void send(int id,String op,String body){
    if(ended)return;jobs.execute(()->{try{JSONObject a=new JSONObject(body);
-     if(op.equals("key")||op.equals("import")||op.equals("export")||op.equals("ai")){runOnUiThread(()->picker(id,op,a));return;}
+     if(op.equals("key")||op.equals("ca")||op.equals("import")||op.equals("export")||op.equals("ai")){runOnUiThread(()->picker(id,op,a));return;}
      reply(id,dispatch(op,a),true);
    }catch(Exception|LinkageError e){reply(id,message(e),false);}});
   }
  }
  static String message(Throwable e){return e.getLocalizedMessage()==null?e.getClass().getSimpleName():e.getLocalizedMessage();}
  JSONObject profiles()throws Exception{return new JSONObject(vault.read("profiles","{}"));}
- JSONObject publicProfile(JSONObject p)throws Exception{JSONObject r=new JSONObject(p.toString()); for(String k:new String[]{"password","privateKey","passphrase"}){r.put("has_"+k,!r.optString(k).isEmpty());r.remove(k);}return r;}
+ JSONObject publicProfile(JSONObject p)throws Exception{JSONObject r=new JSONObject(p.toString()); for(String k:new String[]{"password","privateKey","passphrase"}){r.put("has_"+k,!r.optString(k).isEmpty());r.remove(k);}boolean hasCa=!p.optString(CA_PEM).isEmpty();r.remove(CA_PEM);r.put("has_ca",hasCa);r.put(CA_NAME,hasCa?p.optString(CA_NAME):"");return r;}
+ JSONObject stageCa(Uri uri)throws Exception{
+   if(uri==null||!"content".equals(uri.getScheme()))throw new IOException("无法读取所选 CA 文件，请从系统文件选择器重新选择");
+   byte[] normalized;
+   try(InputStream in=getContentResolver().openInputStream(uri);ByteArrayOutputStream out=new ByteArrayOutputStream()){
+     if(in==null)throw new IOException("所选 CA 文件不可读");byte[] block=new byte[8192];int n;
+     while((n=in.read(block))!=-1){if(out.size()+n>256*1024)throw new IOException("CA 证书包不能超过 256 KiB");out.write(block,0,n);}
+     normalized=Databases.normalizeCa(out.toByteArray());
+   }
+   String name="CA certificate";
+   try(Cursor c=getContentResolver().query(uri,new String[]{OpenableColumns.DISPLAY_NAME},null,null,null)){
+     if(c!=null&&c.moveToFirst()&&!c.isNull(0)){
+       String candidate=c.getString(0).replace('\\','/');candidate=candidate.substring(candidate.lastIndexOf('/')+1).replaceAll("[\\p{Cntrl}]","").trim();
+       if(!candidate.isEmpty())name=candidate.substring(0,Math.min(160,candidate.length()));
+     }
+   }catch(RuntimeException ignored){/* A readable document need not expose a display name. */}
+   stagedCa=normalized;stagedCaName=name;stagedCaToken=UUID.randomUUID().toString();
+   return new JSONObject().put("token",stagedCaToken).put("name",name);
+ }
+ void applyCaEdit(JSONObject p,JSONObject a)throws Exception{
+   switch(a.optString("caAction","keep")){
+     case "keep":return;
+     case "remove":p.remove(CA_PEM);p.remove(CA_NAME);return;
+     case "replace":
+       if(stagedCa==null||!stagedCaToken.equals(a.optString("caToken")))throw new IllegalArgumentException("待导入的 CA 证书已失效，请重新选择文件");
+       p.put(CA_PEM,new String(stagedCa,StandardCharsets.US_ASCII));p.put(CA_NAME,stagedCaName);return;
+     default:throw new IllegalArgumentException("未知的 CA 编辑操作");
+   }
+ }
+ static String remoteError(Exception failure,JSONObject p){
+   boolean ssl=false;String nameDetail=null,caDetail=null,expiredDetail=null,notYetDetail=null,detail=message(failure);
+   for(Throwable t=failure;t!=null;t=t.getCause()){
+     String m=message(t),s=m.toLowerCase(Locale.ROOT);
+     if((s.contains("hostname")&&(s.contains("not")||s.contains("mismatch")||s.contains("verification failed")))||s.contains("no name matching")||s.contains("no subject alternative")||s.contains("doesn't match any of the subject alternative")||s.contains("does not match any of the subject alternative"))nameDetail=m;
+     if(s.contains("trust anchor")||s.contains("unable to find valid certification path")||s.contains("pkix path building failed")||s.contains("unable to get local issuer certificate"))caDetail=m;
+     if(t instanceof java.security.cert.CertificateExpiredException)expiredDetail=m;
+     if(t instanceof java.security.cert.CertificateNotYetValidException)notYetDetail=m;
+     if(t instanceof javax.net.ssl.SSLException||t instanceof java.security.cert.CertificateException)ssl=true;
+     if(ssl&&!m.trim().isEmpty())detail=m;
+   }
+   String prefix=ssl?"TLS 握手失败：":"";
+   if(nameDetail!=null){prefix="HOST_MISMATCH: ";detail=nameDetail;}
+   else if(expiredDetail!=null){prefix="CERT_EXPIRED: ";detail=expiredDetail;}
+   else if(notYetDetail!=null){prefix="CERT_NOT_YET_VALID: ";detail=notYetDetail;}
+   else if(caDetail!=null){prefix="CA_UNTRUSTED: ";detail=caDetail;}
+   for(String k:new String[]{"password","privateKey","passphrase"}){String secret=p.optString(k);if(!secret.isEmpty())detail=detail.replace(secret,"•••");}
+   return prefix+detail;
+ }
  JSONArray publicProfiles()throws Exception{JSONObject p=profiles();JSONArray list=new JSONArray();Iterator<String> it=p.keys();while(it.hasNext())list.put(publicProfile(p.getJSONObject(it.next())));return list;}
  void ensure(JSONObject a){if(db==null||!session.equals(a.optString("session")))throw new IllegalStateException("连接已切换，请重新打开此页");}
  Object dispatch(String op,JSONObject a)throws Exception{
@@ -61,7 +113,9 @@ public final class MainActivity extends FragmentActivity {
   case "saveProfile":{JSONObject all=profiles();String id=a.optString("id");if(id.isEmpty())id=UUID.randomUUID().toString();JSONObject p=all.optJSONObject(id);if(p==null)p=new JSONObject();String host=a.getString("host").trim();if(host.isEmpty())throw new IllegalArgumentException("请填写数据库主机名");
      for(String k:new String[]{"name","engine","host","port","database","user","timeout","tls","ssh","sshHost","sshPort","sshUser","fingerprint"})if(a.has(k))p.put(k,a.get(k));
      for(String k:new String[]{"password","privateKey","passphrase"})if(!a.optString(k).isEmpty())p.put(k,a.getString(k));
-     p.put("id",id);all.put(id,p);vault.put("profiles",all.toString());QueryWidget.refresh(this);return publicProfile(p);}
+     applyCaEdit(p,a);p.put("id",id);all.put(id,p);vault.put("profiles",all.toString());
+     if("replace".equals(a.optString("caAction"))){stagedCa=null;stagedCaToken=null;stagedCaName=null;}
+     QueryWidget.refresh(this);return publicProfile(p);}
   case "deleteProfile":{JSONObject all=profiles();String id=a.getString("id");all.remove(id);vault.put("profiles",all.toString());QueryWidget.refresh(this);return true;}
   case "connect":{
     String id=a.getString("id"),engine=a.getString("engine");Database next;String name;
@@ -69,7 +123,9 @@ public final class MainActivity extends FragmentActivity {
        if(id.equals("demo")&&!vault.read("seeded","false").equals("true"))try{seed(next);vault.put("seeded","true");}catch(Exception e){next.close();throw e;}
     } else {JSONObject p=profiles().getJSONObject(id);engine=p.getString("engine");name=p.optString("name",p.getString("host"));Databases.SshConfig ssh=null;
       if(p.optBoolean("ssh"))ssh=new Databases.SshConfig(p.getString("sshHost"),p.optInt("sshPort",22),p.getString("sshUser"),Base64.decode(p.getString("privateKey"),Base64.DEFAULT),p.optString("passphrase").getBytes(StandardCharsets.UTF_8),p.getString("fingerprint"));
-      next=Databases.openRemote(engine,p.getString("host"),p.getInt("port"),a.has("database")?a.getString("database"):p.getString("database"),p.getString("user"),p.optString("password"),p.optBoolean("tls",true),ssh);
+      boolean tls=p.optBoolean("tls",true);String ca=p.optString(CA_PEM);
+      try{next=Databases.openRemote(engine,p.getString("host"),p.getInt("port"),a.has("database")?a.getString("database"):p.getString("database"),p.getString("user"),p.optString("password"),tls,ssh,tls&&!ca.isEmpty()?ca.getBytes(StandardCharsets.US_ASCII):null);}
+      catch(Exception e){throw new IOException(remoteError(e,p),e);}
       try{next.setQueryTimeoutSeconds(p.optInt("timeout",60));}catch(Exception e){next.close();throw e;}
     }
     Database old=db;db=next;session=UUID.randomUUID().toString();kind=engine;if(old!=null)try{old.close();}catch(Exception ignored){};service(!engine.equals("sqlite")&&a.optBoolean("keep",true));
@@ -114,6 +170,7 @@ public final class MainActivity extends FragmentActivity {
     jobs.execute(()->{try{Object result;
        if(op.equals("ai"))result=data.getStringExtra("sql");
        else if(op.equals("key"))result=Base64.encodeToString(Databases.readSshKey(this,data.getData()),Base64.NO_WRAP);
+       else if(op.equals("ca"))result=stageCa(data.getData());
        else if(op.equals("import")){if("Field Notes".equalsIgnoreCase(a.getString("name").trim()))throw new IllegalArgumentException("请避开内置示例名称 Field Notes");try(Database imported=Databases.importLocal(this,a.getString("name"),data.getData())){}result=a.getString("name");}
        else {try(OutputStream out=getContentResolver().openOutputStream(data.getData(),"wt")){if(out==null)throw new IOException("无法写入");out.write(bytes);}result=true;}
        reply(id,result,true);

@@ -3,3 +3,6 @@
 -keep class org.mariadb.jdbc.** implements org.mariadb.jdbc.authentication.AuthenticationPlugin { *; }
 -keep class org.mariadb.jdbc.** implements org.mariadb.jdbc.tls.TlsSocketPlugin { *; }
 -keep class org.postgresql.ssl.DefaultJavaSSLFactory { *; }
+-keep class dev.fieldsql.db.ProfilePgSslFactory { public <init>(java.util.Properties); }
+-keep class dev.fieldsql.db.DatabaseHostname { public <init>(); }
+-keep class dev.fieldsql.db.MariaVerifiedTls { public <init>(); }

@@ -41,12 +41,17 @@ def ready(port):
     raise RuntimeError('fixture not ready on '+str(port)+'; '+str(t))
 def certs():
     ca=rsa.generate_private_key(public_exponent=65537,key_size=2048);leaf=rsa.generate_private_key(public_exponent=65537,key_size=2048)
+    intermediate=rsa.generate_private_key(public_exponent=65537,key_size=2048);other=rsa.generate_private_key(public_exponent=65537,key_size=2048)
     now=datetime.datetime.now(datetime.timezone.utc);cn=lambda n:x509.Name([x509.NameAttribute(NameOID.COMMON_NAME,n)])
-    def make(pub,name):
-        return x509.CertificateBuilder().subject_name(cn(name)).issuer_name(cn('FieldSQL QA Root')).public_key(pub.public_key()).serial_number(x509.random_serial_number()).not_valid_before(now-datetime.timedelta(days=1)).not_valid_after(now+datetime.timedelta(days=2))
-    cr=make(ca,'FieldSQL QA Root').add_extension(x509.BasicConstraints(ca=True,path_length=0),critical=True).sign(ca,hashes.SHA256())
-    sv=make(leaf,'localhost').add_extension(x509.SubjectAlternativeName([x509.DNSName('localhost')]),False).add_extension(x509.ExtendedKeyUsage([ExtendedKeyUsageOID.SERVER_AUTH]),False).sign(ca,hashes.SHA256())
-    for path,obj in [('ca.pem',cr),('server.pem',sv)]: (t/path).write_bytes(obj.public_bytes(serialization.Encoding.PEM))
+    def make(pub,name,issuer='FieldSQL QA Root'):
+        return x509.CertificateBuilder().subject_name(cn(name)).issuer_name(cn(issuer)).public_key(pub.public_key()).serial_number(x509.random_serial_number()).not_valid_before(now-datetime.timedelta(days=1)).not_valid_after(now+datetime.timedelta(days=2))
+    cr=make(ca,'FieldSQL QA Root').add_extension(x509.BasicConstraints(ca=True,path_length=1),critical=True).sign(ca,hashes.SHA256())
+    ci=make(intermediate,'FieldSQL QA Issuing CA').add_extension(x509.BasicConstraints(ca=True,path_length=0),critical=True).sign(ca,hashes.SHA256())
+    cw=make(other,'FieldSQL Unrelated CA','FieldSQL Unrelated CA').add_extension(x509.BasicConstraints(ca=True,path_length=0),critical=True).sign(other,hashes.SHA256())
+    sv=make(leaf,'localhost','FieldSQL QA Issuing CA').add_extension(x509.BasicConstraints(ca=False,path_length=None),True).add_extension(x509.SubjectAlternativeName([x509.DNSName('localhost'),x509.IPAddress(ipaddress.ip_address('10.0.2.2'))]),False).add_extension(x509.ExtendedKeyUsage([ExtendedKeyUsageOID.SERVER_AUTH]),False).sign(intermediate,hashes.SHA256())
+    for path,obj in [('ca.pem',cr),('wrong-ca.pem',cw),('leaf.pem',sv)]: (t/path).write_bytes(obj.public_bytes(serialization.Encoding.PEM))
+    (t/'ca.der').write_bytes(cr.public_bytes(serialization.Encoding.DER))
+    (t/'server.pem').write_bytes(sv.public_bytes(serialization.Encoding.PEM)+ci.public_bytes(serialization.Encoding.PEM))
     (t/'server.key').write_bytes(leaf.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.TraditionalOpenSSL,serialization.NoEncryption()))
     run(['keytool','-importcert','-noprompt','-alias','fieldsql-qa','-file',t/'ca.pem','-keystore',t/'trust.p12','-storepass',pw])
 class Proxy(paramiko.ServerInterface):
@@ -100,7 +105,7 @@ try:
     # Keep all extracted and generated files inside the fixture. The init file sets the password before the listener accepts clients.
     run([obin/'mysqld','--no-defaults','--initialize-insecure','--basedir='+str(obin.parent),'--datadir='+str(sql8),'--console'])
     init=t/'init.sql';init.write_text("ALTER USER 'root'@'localhost' IDENTIFIED BY '"+pw+"';\nCREATE DATABASE fieldsql_qa CHARACTER SET utf8mb4;\n",encoding='ascii')
-    start([obin/'mysqld','--no-defaults','--basedir='+str(obin.parent),'--datadir='+str(sql8),'--bind-address=127.0.0.1','--port='+str(oracle),'--mysqlx=0','--init-file='+str(init),'--ssl-ca='+str(t/'ca.pem'),'--ssl-cert='+str(t/'server.pem'),'--ssl-key='+str(t/'server.key'),'--console'],'mysql8.log')
+    start([obin/'mysqld','--no-defaults','--no-monitor','--basedir='+str(obin.parent),'--datadir='+str(sql8),'--bind-address=127.0.0.1','--port='+str(oracle),'--mysqlx=0','--init-file='+str(init),'--ssl-ca='+str(t/'ca.pem'),'--ssl-cert='+str(t/'server.pem'),'--ssl-key='+str(t/'server.key'),'--console'],'mysql8.log')
     ready(oracle)
     server=paramiko.RSAKey.generate(2048);client=paramiko.RSAKey.generate(2048);client.write_private_key_file(str(t/'ssh.pem'));fp='SHA256:'+base64.b64encode(hashlib.sha256(server.asbytes()).digest()).decode().rstrip('=')
     listener=socket.socket();listener.bind(('127.0.0.1',0));listener.listen(8);threading.Thread(target=serve,args=(listener,),daemon=True).start()
@@ -112,7 +117,7 @@ try:
     if '--hold' in sys.argv:
         import json
         # Bind only to host loopback. Android emulator reaches it via 10.0.2.2.
-        ui=t/'ui.json'; ui.write_text(json.dumps({'host':'10.0.2.2','ssl':False,'password':pw,'postgres':{'port':pg,'user':'fieldsql','database':'postgres'},'mariadb':{'port':my,'user':'root','database':'fieldsql_qa'},'mysql':{'port':oracle,'user':'root','database':'fieldsql_qa'},'sshPort':listener.getsockname()[1],'sshUser':'qa','sshKey':str(real_b/t.name/'ssh.pem'),'sshHostPin':fp,'stop':str(real_b/t.name/'STOP')}),encoding='utf-8')
+        ui=t/'ui.json'; ui.write_text(json.dumps({'host':'10.0.2.2','ssl':True,'ca':str(real_b/t.name/'ca.pem'),'wrongCa':str(real_b/t.name/'wrong-ca.pem'),'password':pw,'postgres':{'port':pg,'user':'fieldsql','database':'postgres'},'mariadb':{'port':my,'user':'root','database':'fieldsql_qa'},'mysql':{'port':oracle,'user':'root','database':'fieldsql_qa'},'sshPort':listener.getsockname()[1],'sshUser':'qa','sshKey':str(real_b/t.name/'ssh.pem'),'sshHostPin':fp,'stop':str(real_b/t.name/'STOP')}),encoding='utf-8')
         print('ANDROID FIXTURES READY: '+str(real_b/t.name/'ui.json'),flush=True)
         deadline=time.monotonic()+3600
         while time.monotonic()<deadline and not (t/'STOP').exists():time.sleep(.5)
